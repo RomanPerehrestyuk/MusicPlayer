@@ -59,7 +59,7 @@
                FontSize="16"
                FontWeight="Bold">
         </Label>
-        
+
         <Slider
             Width="250" 
             Margin="100,280,100,300"
