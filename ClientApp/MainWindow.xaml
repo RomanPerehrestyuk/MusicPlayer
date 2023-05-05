@@ -59,7 +59,7 @@
                FontSize="16"
                FontWeight="Bold">
         </Label>
-        
+
         <Slider
             Width="250" 
             Margin="100,280,100,300"
@@ -120,5 +120,26 @@
             <ListBoxItem Content="Song name 4"/>
             <ListBoxItem Content="Song name 5"/>
         </ListBox>
+
+        <Button Name="Button_Exit" 
+                Width="18" 
+                Height="18" 
+                Margin="420,10,10,570"
+                Background="#cc4949"
+                Padding="0"
+                Click="Button_Exit_Click">
+            <Image Source="/ClientApp;component/Images/exit.png" Width="15" Height="15"/>
+        </Button>
+
+        <Button Name="Button_RollUp"
+                Width="18" 
+                Height="18" 
+                Margin="385,10,40,570"
+                Background="#e0d1d1"
+                Padding="3,5,5,0"
+                Click="Button_RollUp_Click">
+            <Image Source="/ClientApp;component/Images/rollUp.png" Width="15" Height="15"/>
+        </Button>
+
     </Grid>
 </Window>
