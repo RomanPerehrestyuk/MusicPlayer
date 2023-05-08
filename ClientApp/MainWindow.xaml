@@ -27,7 +27,7 @@
             HorizontalAlignment="Center"><Run Text="My music"/><Run/>
         </TextBlock>
 
-        <Image Source="Images/note.png" Width="80" Height="80" Margin="150,60,150,460"/>
+        <Image Source="Images/note.png" Width="80" Height="80" Margin="150,60,150,460" x:Name="logo" MouseDown="logo_MouseDown"/>
 
         <Label Name="Name_Song"
                Content="Name song" 
@@ -88,7 +88,7 @@
             <Image Source="/ClientApp;component/Images/repeat.png" Width="14" Height="10"/>
         </Button>
 
-        <Button Name="Button_Add" Height="18" Width="60" Margin="20,280,370,300">
+        <Button Name="Button_Add" Height="18" Width="60" Margin="20,280,370,300" Click="Button_Add_Click">
             <TextBlock
             FontWeight="Light"
             FontFamily="helvetica"
@@ -113,12 +113,9 @@
                  BorderThickness="2" 
                  BorderBrush="#34a8eb"
                  MouseEnter="ListMusic_MouseEnter"
-                 MouseLeave="ListMusic_MouseLeave">
-            <ListBoxItem Content="Song name 1"/>
-            <ListBoxItem Content="Song name 2"/>
-            <ListBoxItem Content="Song name 3"/>
-            <ListBoxItem Content="Song name 4"/>
-            <ListBoxItem Content="Song name 5"/>
+                 MouseLeave="ListMusic_MouseLeave"
+                 ItemsSource="{Binding Songs}"
+                 ToolTip="{Binding SongSize}">
         </ListBox>
 
         <Button Name="Button_Exit" 

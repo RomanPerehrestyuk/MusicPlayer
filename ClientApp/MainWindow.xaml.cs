@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -20,15 +21,17 @@ namespace ClientApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        ViewModel model;
+        int counter = 0;
         public MainWindow()
         {
             InitializeComponent();
+            model = new ViewModel();
+            this.DataContext = model;
         }
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-
-            // Begin dragging the window
             this.DragMove();
         }
 
@@ -58,6 +61,30 @@ namespace ClientApp
         private void Button_RollUp_Click(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Minimized;
+        }
+
+        private void Button_Add_Click(object sender, RoutedEventArgs e)
+        {
+            model.AddSongs(new Song("Hello"));
+        }
+
+        private void logo_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            counter++;
+            if (counter == 5)
+            {
+                RotateTransform rotateTransform = new RotateTransform();
+                logo.RenderTransform = rotateTransform;
+
+                DoubleAnimation animation = new DoubleAnimation();
+                animation.From = 0;
+                animation.To = 360;
+                animation.Duration = TimeSpan.FromSeconds(2);
+                animation.EasingFunction = new BackEase();
+
+                rotateTransform.BeginAnimation(RotateTransform.AngleProperty, animation);
+                counter = 0;
+            }
         }
     }
     
