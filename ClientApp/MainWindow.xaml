@@ -115,7 +115,8 @@
                  MouseEnter="ListMusic_MouseEnter"
                  MouseLeave="ListMusic_MouseLeave"
                  ItemsSource="{Binding Songs}"
-                 ToolTip="{Binding SongSize}">
+                 ToolTip="{Binding SongSize}"
+                 SelectionChanged="ListMusic_SelectionChanged">
         </ListBox>
 
         <Button Name="Button_Exit" 
