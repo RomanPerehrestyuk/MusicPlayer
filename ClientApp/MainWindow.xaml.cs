@@ -28,6 +28,7 @@ namespace ClientApp
             InitializeComponent();
             model = new ViewModel();
             this.DataContext = model;
+            Button_Delete.IsEnabled = false;
         }
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
@@ -84,6 +85,18 @@ namespace ClientApp
 
                 rotateTransform.BeginAnimation(RotateTransform.AngleProperty, animation);
                 counter = 0;
+            }
+        }
+
+        private void ListMusic_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(ListMusic.SelectedItem != null)
+            {
+                Button_Delete.IsEnabled = true;
+            }
+            else
+            {
+                Button_Delete.IsEnabled = false;
             }
         }
     }
