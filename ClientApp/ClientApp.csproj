@@ -14,6 +14,7 @@
     <None Remove="Images\next.png" />
     <None Remove="Images\note.png" />
     <None Remove="Images\pause.png" />
+    <None Remove="Images\play.png" />
     <None Remove="Images\previous.png" />
     <None Remove="Images\repeat.png" />
     <None Remove="Images\rollUp.png" />
@@ -36,6 +37,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\pause.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\play.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\previous.png">

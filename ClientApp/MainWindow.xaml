@@ -30,35 +30,35 @@
         <Image Source="Images/note.png" Width="80" Height="80" Margin="150,60,150,460" x:Name="logo" MouseDown="logo_MouseDown"/>
 
         <Label Name="Name_Song"
-               Content="Name song" 
+               Content="{Binding SelectedName}" 
                Margin="50,240,50,330" 
                HorizontalContentAlignment="Center"
                FontSize="16"
                FontWeight="Bold">
         </Label>
 
-        <Label Name="Current_Duraction"
-               Content="0:00" 
+        <!--<Label Name="Current_Duraction"
+               Content="" 
                Margin="170,300,230,270" 
                HorizontalContentAlignment="Center"
                FontSize="16"
                FontWeight="Bold">
-        </Label>
+        </Label>-->
 
-        <Label Content="/" 
+        <Label Content="{Binding SongDuration}" 
                Margin="200,300,200,270" 
                HorizontalContentAlignment="Center"
                FontSize="16"
                FontWeight="Bold">
         </Label>
 
-        <Label Name="Full_Duraction"
-               Content="0:00" 
+        <!--<Label Name="Full_Duraction"
+               Content="" 
                Margin="230,300,170,270" 
                HorizontalContentAlignment="Center"
                FontSize="16"
                FontWeight="Bold">
-        </Label>
+        </Label>-->
 
         <Slider
             Width="250" 
@@ -67,11 +67,13 @@
             Orientation="Horizontal"
             Minimum="0"
             Maximum="100"
-            Value="0">
+            Value="0"
+            x:Name="slider"
+            ValueChanged="slider_ValueChanged">
         </Slider>
 
-        <Button Name="Button_Play" Height="40" Width="50" Margin="170,260,170,140">
-            <Image Source="/ClientApp;component/Images/pause.png" Width="20" Height="20"/>
+        <Button Name="Button_Play" Height="40" Width="50" Margin="170,260,170,140" Click="Button_Play_Click">
+            <Image Source="/ClientApp;component/Images/play.png" Width="12" Height="12"/>
         </Button>
         <Button Name="Button_Next" Height="40" Width="50" Margin="240,260,100,140">
             <Image Source="/ClientApp;component/Images/next.png" Width="20" Height="20"/>
@@ -97,7 +99,7 @@
             HorizontalAlignment="Center"><Run Text="Add"/><Run/>
             </TextBlock>
         </Button>
-        <Button Name="Button_Delete" Height="18" Width="60" Margin="370,280,20,300">
+        <Button Name="Button_Delete" Height="18" Width="60" Margin="370,280,20,300" Click="Button_Delete_Click">
             <TextBlock
             FontWeight="Light"
             FontFamily="helvetica"
@@ -106,7 +108,7 @@
             HorizontalAlignment="Center"><Run Text="Delete"/><Run/>
             </TextBlock>
         </Button>
-
+        <MediaElement x:Name="mediaElement" LoadedBehavior="Manual"/>
         <ListBox Name="ListMusic" 
                  Width="350" 
                  Margin="50,400,50,50" 
@@ -117,6 +119,11 @@
                  ItemsSource="{Binding Songs}"
                  ToolTip="{Binding SongSize}"
                  SelectionChanged="ListMusic_SelectionChanged">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Name}" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
 
         <Button Name="Button_Exit" 
