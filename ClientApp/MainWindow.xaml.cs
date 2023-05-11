@@ -1,6 +1,8 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.Metrics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,6 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ClientApp
 {
@@ -28,13 +31,19 @@ namespace ClientApp
         int counter = 0;
         DispatcherTimer timer;
         bool isPlaying;
+        bool isOnRepeat;
+        bool isShuffle;
+        ObservableCollection<Song> shuffledSongs;
         public MainWindow()
         {
             InitializeComponent();
             isPlaying = false;
+            isOnRepeat = false;
+            isShuffle = false;
             model = new ViewModel();
             this.DataContext = model;
             Button_Delete.IsEnabled = false;
+            shuffledSongs = new ObservableCollection<Song>(model.GetSongs().OrderBy(x => Guid.NewGuid()));
             if (Directory.GetFiles("Songs").Length != 0)
             {
                 string[] files = Directory.GetFiles(@"Songs", "*", SearchOption.AllDirectories);
@@ -53,16 +62,129 @@ namespace ClientApp
 
         private void MediaElement_MediaEnded(object? sender, EventArgs e)
         {
+            //count = 0;
+            int count;
+            var songsType = model.GetSongs();
             try
             {
-                mediaElement.Position = TimeSpan.Zero;
-                mediaElement.Play();
+                if (ListMusic.ItemsSource == shuffledSongs)
+                {
+                    songsType = shuffledSongs;
+                }
+                else if (ListMusic.ItemsSource == model.GetSongs())
+                {
+                    songsType = model.GetSongs();
+                }
+                count = 0;
+                var imageplay = new System.Windows.Controls.Image { Source = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative)) };
+                if (isOnRepeat == true)
+                {
+                    mediaElement.Position = TimeSpan.Zero;
+                    mediaElement.Play();
+
+                    //mediaPlayer.Open(new Uri(@"Songs/" + model.GetName(ListMusic.SelectedItem as Song)));
+                    //Task.Run(() =>
+                    //{
+                    //    mediaElement.Dispatcher.Invoke(() =>
+                    //    {
+                    //        //mediaElement.Source = new Uri(System.IO.Path.Combine(path, model.GetName(ListMusic.SelectedItem as Song) + ".mp3"));
+                    //        mediaElement.Play();
+                    //    });
+                    //});
+                }
+                else
+                {
+
+                    if (songsType.Count > 1)
+                    {
+                        foreach (var song in songsType)
+                        {
+                            if ((ListMusic.SelectedItem as Song).Name == song.Name)
+                            {
+                                break;
+                            }
+                            count++;
+                        }
+                        if (count < songsType.Count - 1)
+                        {
+                            slider.Value = 0;
+                            ListMusic.SelectedItem = songsType[count + 1];
+                            //MessageBox.Show((count + 1).ToString());
+                            if (!isPlaying)
+                            {
+                                mediaElement.Play();
+                            }
+                        }
+                        else
+                        {
+                            count = 0;
+                            Button_Play.Content = imageplay;
+                            if (!isShuffle)
+                            {
+                                Button_Delete.IsEnabled = true;
+                            }
+                            isPlaying = false;
+                            mediaElement.Stop();
+                        }
+                    }
+                    else
+                    {
+                        Button_Play.Content = imageplay;
+                        if (!isShuffle)
+                        {
+                            Button_Delete.IsEnabled = true;
+                        }
+                        isPlaying = false;
+                        mediaElement.Stop();
+                    }
+
+                    //int currentIndex = ListMusic.SelectedIndex;
+
+                    //// перевіряємо, чи вже програвся останній елемент
+                    //if (currentIndex == ListMusic.Items.Count - 1)
+                    //{
+                    //    // якщо так, зупиняємо відтворення
+                    //    mediaElement.Stop();
+                    //    return;
+                    //}
+
+                    //// вибираємо наступну пісню зі списку
+                    //ListMusic.SelectedIndex = currentIndex + 1;
+
+                    //// отримуємо шлях до наступної пісні та відтворюємо її
+                    ////string path = (ListMusic.SelectedItem as Song).Path;
+                    ////mediaElement.Source = new Uri(path);
+                    //mediaElement.Play();
+                }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-            
+            //count = 0;
+            //var imageplay = new Image { Source = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative)) };
+            //if (isOnRepeat)
+            //{
+            //    mediaElement.Position = TimeSpan.Zero;
+            //    mediaElement.Play();
+            //}
+            //else
+            //{
+            //    var songs = model.GetSongs();
+            //    int currentIndex = songs.IndexOf(ListMusic.SelectedItem as Song);
+            //    if (currentIndex == songs.Count - 1) // якщо це була остання пісня
+            //    {
+            //        Button_Play.Content = imageplay;
+            //        Button_Delete.IsEnabled = true;
+            //        isPlaying = false;
+            //        mediaElement.Stop();
+            //    }
+            //    else // якщо є наступна пісня
+            //    {
+            //        ListMusic.SelectedItem = songs[currentIndex + 1];
+            //        mediaElement.Play();
+            //    }
+            //}
         }
 
         private void MediaElement_MediaOpened(object? sender, EventArgs e)
@@ -93,6 +215,16 @@ namespace ClientApp
             {
                 model.SongDuration = string.Format("{0:mm\\:ss}/{1:mm\\:ss}", mediaElement.Position, mediaElement.NaturalDuration.TimeSpan);
                 slider.Value = mediaElement.Position.TotalSeconds;
+                if (isPlaying)
+                {
+                    Storyboard storyboard = (Storyboard)FindResource("ZoomAnimation");
+                    storyboard.Begin();
+                }
+                else
+                {
+                    Storyboard storyboard = (Storyboard)FindResource("ZoomAnimation");
+                    storyboard.Stop();
+                }
             }
             catch (Exception ex)
             {
@@ -136,6 +268,7 @@ namespace ClientApp
 
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
+            //ListMusic.ItemsSource = model.Songs;
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "MP3 files (*.mp3)|*.mp3|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
@@ -193,7 +326,7 @@ namespace ClientApp
                     string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Songs");
                     mediaElement.Source = new Uri(System.IO.Path.Combine(path, model.GetName(selectedsong) + ".mp3"));
                 }
-                if (ListMusic.SelectedItem != null && !isPlaying)
+                if (ListMusic.SelectedItem != null && !isPlaying && !isShuffle)
                 {
                     //model.SelectedName = model.GetName(ListMusic.SelectedItem as Song);
                     
@@ -247,8 +380,8 @@ namespace ClientApp
                     //mediaElement.Source = new Uri(System.IO.Path.Combine("Songs", model.GetName(ListMusic.SelectedItem as Song)));
                     //string hardcode = "C:\\Users\\User\\Desktop\\Нова папка\\MusicPlayer\\ClientApp\\bin\\Debug\\net6.0-windows\\Songs";
                     //string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Songs");
-                    var imageplay = new Image { Source = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative)) };
-                    var imagepause = new Image { Source = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative)) };
+                    var imageplay = new System.Windows.Controls.Image { Source = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative)) };
+                    var imagepause = new System.Windows.Controls.Image { Source = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative)) };
                     //mediaElement.Source = new Uri(System.IO.Path.Combine(hardcode, model.GetName(ListMusic.SelectedItem as Song) + ".mp3"));
                     //MessageBox.Show(System.IO.Path.Combine("Songs", model.GetName(ListMusic.SelectedItem as Song) + ".mp3"));
                     //return;
@@ -278,7 +411,10 @@ namespace ClientApp
                     {
                         Button_Play.Content = imageplay;
                         isPlaying = false;
-                        Button_Delete.IsEnabled = true;
+                        if (!isShuffle)
+                        {
+                            Button_Delete.IsEnabled = true;
+                        }
                         //Task.Run(() =>
                         //{
                         //    mediaElement.Dispatcher.Invoke(() =>
@@ -306,6 +442,211 @@ namespace ClientApp
         private void slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             mediaElement.Position = TimeSpan.FromSeconds(slider.Value);
+        }
+
+        private void Button_Repeat_Click(object sender, RoutedEventArgs e)
+        {
+            if (isOnRepeat == false)
+            {
+                Button_Repeat.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2480b5"));
+                isOnRepeat = true;
+            }
+            else
+            {
+                Button_Repeat.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#34a8eb"));
+                isOnRepeat = false;
+            }
+        }
+
+        private void Button_Shuffle_Click(object sender, RoutedEventArgs e)
+        {
+            if (isShuffle == false)
+            {
+                Button_Shuffle.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2480b5"));
+                isShuffle = true;
+                Button_Add.IsEnabled = false;
+                Button_Delete.IsEnabled = false;
+                shuffledSongs = new ObservableCollection<Song>(model.GetSongs().OrderBy(x => Guid.NewGuid()));
+                ListMusic.ItemsSource = shuffledSongs;
+            }
+            else
+            {
+                Button_Shuffle.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#34a8eb"));
+                isShuffle = false;
+                Button_Add.IsEnabled = true;
+                Button_Delete.IsEnabled = true;
+                ListMusic.ItemsSource = model.Songs;
+            }
+        }
+
+        private void Button_Next_Click(object sender, RoutedEventArgs e)
+        {
+            int count = 0;
+            var selectedsong = ListMusic.SelectedItem as Song;
+            //var imagepause = new Image { Source = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative)) };
+            var songsType = model.GetSongs();
+                if (ListMusic.ItemsSource == shuffledSongs)
+                {
+                    songsType = shuffledSongs;
+                }
+                else if (ListMusic.ItemsSource == model.GetSongs())
+                {
+                    songsType = model.GetSongs();
+                }
+                if (selectedsong != null)
+                {
+                if (songsType.Count > 1)
+                {
+                    foreach (var song in songsType)
+                    {
+                        if (selectedsong.Name == song.Name)
+                        {
+                            break;
+                        }
+                        count++;
+                    }
+                    if (count == songsType.Count - 1)
+                    {
+                        count = 0;
+                        slider.Value = 0;
+                        ListMusic.SelectedItem = songsType[count];
+                        //MessageBox.Show((count + 1).ToString());
+                        if (isPlaying)
+                        {
+                            mediaElement.Play();
+                        }
+                    }
+                    else
+                    {
+                        slider.Value = 0;
+                        ListMusic.SelectedItem = songsType[count + 1];
+                        //MessageBox.Show((count + 1).ToString());
+                        if (isPlaying)
+                        {
+                            mediaElement.Play();
+                        }
+                    }
+                    //if (count < model.GetSongs().Count - 1)
+                    //{
+                    //    slider.Value = 0;
+                    //    ListMusic.SelectedItem = model.GetSongs()[count + 1];
+                    //    //MessageBox.Show((count + 1).ToString());
+                    //    if (!isPlaying)
+                    //    {
+                    //        mediaElement.Play();
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    //count = 0;
+                    //    //Button_Play.Content = imageplay;
+                    //    //Button_Delete.IsEnabled = true;
+                    //    //isPlaying = false;
+                    //    //mediaElement.Stop();
+                    //}
+                }
+                else
+                {
+                    //Button_Play.Content = imageplay;
+                    //Button_Delete.IsEnabled = false;
+                    //isPlaying = true;
+                    //mediaElement.Stop();
+                    string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Songs");
+                    mediaElement.Source = new Uri(System.IO.Path.Combine(path, model.GetName(selectedsong) + ".mp3"));
+                    if (isPlaying)
+                    {
+                        mediaElement.Play();
+                    }
+                    //Button_Play.Content = imagepause;
+                    model.SelectedName = model.GetName(selectedsong);
+                }
+            }
+
+        }
+
+        private void Button_Previous_Click(object sender, RoutedEventArgs e)
+        {
+            int count = 0;
+            var selectedsong = ListMusic.SelectedItem as Song;
+            //var imagepause = new Image { Source = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative)) };
+            var songsType = model.GetSongs();
+            if (ListMusic.ItemsSource == shuffledSongs)
+            {
+                songsType = shuffledSongs;
+            }
+            else if (ListMusic.ItemsSource == model.GetSongs())
+            {
+                songsType = model.GetSongs();
+            }
+            if (selectedsong != null)
+            {
+                if (songsType.Count > 1)
+                {
+                    foreach (var song in songsType)
+                    {
+                        if (selectedsong.Name == song.Name)
+                        {
+                            break;
+                        }
+                        count++;
+                    }
+                    if (count == 0)
+                    {
+                        count = songsType.Count - 1;
+                        slider.Value = 0;
+                        ListMusic.SelectedItem = songsType[count];
+                        //MessageBox.Show((count + 1).ToString());
+                        if (isPlaying)
+                        {
+                            mediaElement.Play();
+                        }
+                    }
+                    else
+                    {
+                        slider.Value = 0;
+                        ListMusic.SelectedItem = songsType[count - 1];
+                        //MessageBox.Show((count + 1).ToString());
+                        if (isPlaying)
+                        {
+                            mediaElement.Play();
+                        }
+                    }
+                    //if (count < model.GetSongs().Count - 1)
+                    //{
+                    //    slider.Value = 0;
+                    //    ListMusic.SelectedItem = model.GetSongs()[count + 1];
+                    //    //MessageBox.Show((count + 1).ToString());
+                    //    if (!isPlaying)
+                    //    {
+                    //        mediaElement.Play();
+                    //    }
+                    //}
+                    //else
+                    //{
+                    //    //count = 0;
+                    //    //Button_Play.Content = imageplay;
+                    //    //Button_Delete.IsEnabled = true;
+                    //    //isPlaying = false;
+                    //    //mediaElement.Stop();
+                    //}
+                }
+                else
+                {
+                    //Button_Play.Content = imageplay;
+                    //Button_Delete.IsEnabled = false;
+                    //isPlaying = true;
+                    //mediaElement.Stop();
+                    string path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Songs");
+                    mediaElement.Source = new Uri(System.IO.Path.Combine(path, model.GetName(selectedsong) + ".mp3"));
+                    if (isPlaying)
+                    {
+                        mediaElement.Play();
+                    }
+                    //Button_Play.Content = imagepause;
+                    model.SelectedName = model.GetName(selectedsong);
+                }
+            }
+
         }
     }
     

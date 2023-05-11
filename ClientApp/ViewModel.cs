@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace ClientApp
 {
@@ -35,6 +36,11 @@ namespace ClientApp
         public string GetName(Song song)
         {
                return song.Name;
+        }
+
+        public ObservableCollection<Song> GetSongs()
+        {
+            return songs;
         }
 
         //public void SetCurrentDuration(TimeSpan current_duration, Song song)
