@@ -532,5 +532,10 @@ namespace ClientApp
             model.ClearAll();
             searchTextBox.Text = "";
         }
+
+        private void VolumeSlider_MouseEnter(object sender, MouseEventArgs e)
+        {
+            model.VolumeOfMusic = $"Volume: {(int)VolumeSlider.Value}%";
+        }
     }
 }

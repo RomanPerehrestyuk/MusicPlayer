@@ -150,9 +150,13 @@
                Source="/ClientApp;component/Images/volume.png" 
                Width="30" Height="30"
                Margin="60,15,360,555"
-               MouseDown="Volume_MouseDown"/>
+               MouseDown="Volume_MouseDown"
+               Cursor="Hand"
+               ToolTip="Change volume of music"/>
         <Slider
             Name="VolumeSlider"
+            MouseEnter="VolumeSlider_MouseEnter"
+            ToolTip="{Binding VolumeOfMusic}"
             ValueChanged="Slider_ValueChanged"
             Minimum="0"
             Maximum="100"
@@ -160,12 +164,15 @@
             Height="20"
             Width="200"
             Foreground="#6dbf94"
-            Margin="100,20,150,560">
+            Margin="100,20,150,560"
+            Cursor="Hand">
         </Slider>
         <Image Name="Delete"
+               ToolTip="Delete all music"
                Source="/ClientApp;component/Images/delete.png"
                Width="30" Height="30"
                Margin="20,15,400,555"
-               MouseDown="Delete_MouseDown"/>
+               MouseDown="Delete_MouseDown"
+               Cursor="Hand"/>
     </Grid>
 </Window>
