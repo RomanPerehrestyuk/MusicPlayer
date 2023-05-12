@@ -16,6 +16,7 @@ namespace ClientApp
         public string SongSize { get; set; }
         public string SelectedName { get; set; }
         public string SongDuration { get; set; }
+        public string VolumeOfMusic { get; set; }
         public ViewModel()
         {
             songs = new ObservableCollection<Song>();
