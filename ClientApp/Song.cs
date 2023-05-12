@@ -14,7 +14,6 @@ namespace ClientApp
         {
             Name = name;
         }
-
         public string Name { get; set; }
         public TimeSpan CurrentDuration { get; set; }
         public TimeSpan FullDuration { get; set; }
