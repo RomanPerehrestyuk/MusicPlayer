@@ -34,8 +34,7 @@
             Foreground="White"
             HorizontalAlignment="Center"><Run Text="My music"/><Run/>
         </TextBlock>
-
-        <!--<Image Source="Images/note.png" Width="80" Height="80" Margin="150,60,150,460" x:Name="logo" MouseDown="logo_MouseDown"/>-->
+        
         <Image Source="Images/note.png" Width="80" Height="80" Margin="150,60,150,460" x:Name="logo" RenderTransformOrigin="0.5,0.5">
             <Image.RenderTransform>
                 <ScaleTransform ScaleX="1" ScaleY="1"/>
@@ -44,38 +43,22 @@
 
         <Label Name="Name_Song"
                Content="{Binding SelectedName}" 
-               Margin="50,240,50,330" 
+               Margin="50,220,50,350" 
                HorizontalContentAlignment="Center"
                FontSize="16"
                FontWeight="Bold">
         </Label>
-
-        <!--<Label Name="Current_Duraction"
-               Content="" 
-               Margin="170,300,230,270" 
-               HorizontalContentAlignment="Center"
-               FontSize="16"
-               FontWeight="Bold">
-        </Label>-->
 
         <Label Content="{Binding SongDuration}" 
-               Margin="200,300,200,270" 
+               Margin="200,280,200,290" 
                HorizontalContentAlignment="Center"
                FontSize="16"
                FontWeight="Bold">
         </Label>
-
-        <!--<Label Name="Full_Duraction"
-               Content="" 
-               Margin="230,300,170,270" 
-               HorizontalContentAlignment="Center"
-               FontSize="16"
-               FontWeight="Bold">
-        </Label>-->
 
         <Slider
             Width="250" 
-            Margin="100,280,100,300"
+            Margin="100,260,100,320"
             TickFrequency="5"
             Orientation="Horizontal"
             Minimum="0"
@@ -85,25 +68,25 @@
             ValueChanged="slider_ValueChanged">
         </Slider>
 
-        <Button Name="Button_Play" Height="40" Width="50" Margin="170,260,170,140" Click="Button_Play_Click">
+        <Button Name="Button_Play" Height="40" Width="50" Margin="200,315,200,245" Click="Button_Play_Click">
             <Image Source="/ClientApp;component/Images/play.png" Width="12" Height="12"/>
         </Button>
-        <Button Name="Button_Next" Height="40" Width="50" Margin="240,260,100,140" Click="Button_Next_Click">
+        <Button Name="Button_Next" Height="40" Width="50" Margin="240,315,100,245" Click="Button_Next_Click">
             <Image Source="/ClientApp;component/Images/next.png" Width="20" Height="20"/>
         </Button>
-        <Button Name="Button_Previous" Height="40" Width="50" Margin="100,260,240,140" Click="Button_Previous_Click">
+        <Button Name="Button_Previous" Height="40" Width="50" Margin="100,315,240,245" Click="Button_Previous_Click">
             <Image Source="/ClientApp;component/Images/previous.png" Width="20" Height="20"/>
         </Button>
 
-        <Button Name="Button_Shuffle" Height="30" Width="40" Margin="25,260,375,140" Click="Button_Shuffle_Click">
+        <Button Name="Button_Shuffle" Height="30" Width="40" Margin="25,315,375,245" Click="Button_Shuffle_Click">
             <Image Source="/ClientApp;component/Images/arrows.png" Width="8" Height="15"/>
         </Button>
 
-        <Button Name="Button_Repeat" Height="30" Width="40" Margin="375,260,25,140" Click="Button_Repeat_Click">
+        <Button Name="Button_Repeat" Height="30" Width="40" Margin="375,315,25,245" Click="Button_Repeat_Click">
             <Image Source="/ClientApp;component/Images/repeat.png" Width="14" Height="10"/>
         </Button>
 
-        <Button Name="Button_Add" Height="18" Width="60" Margin="20,280,370,300" Click="Button_Add_Click">
+        <Button Name="Button_Add" Height="18" Width="60" Margin="20,260,370,320" Click="Button_Add_Click">
             <TextBlock
             FontWeight="Light"
             FontFamily="helvetica"
@@ -112,7 +95,7 @@
             HorizontalAlignment="Center"><Run Text="Add"/><Run/>
             </TextBlock>
         </Button>
-        <Button Name="Button_Delete" Height="18" Width="60" Margin="370,280,20,300" Click="Button_Delete_Click">
+        <Button Name="Button_Delete" Height="18" Width="60" Margin="370,260,20,320" Click="Button_Delete_Click">
             <TextBlock
             FontWeight="Light"
             FontFamily="helvetica"
@@ -158,5 +141,31 @@
                 Click="Button_RollUp_Click">
             <Image Source="/ClientApp;component/Images/rollUp.png" Width="15" Height="15"/>
         </Button>
+
+        <TextBox Name="searchTextBox" 
+                 Width="350" Height="30" 
+                 Margin="50,365,50,205" 
+                 TextChanged="searchTextBox_TextChanged" />
+        <Image Name="Volume"
+               Source="/ClientApp;component/Images/volume.png" 
+               Width="30" Height="30"
+               Margin="60,15,360,555"
+               MouseDown="Volume_MouseDown"/>
+        <Slider
+            Name="VolumeSlider"
+            ValueChanged="Slider_ValueChanged"
+            Minimum="0"
+            Maximum="100"
+            Value="10"
+            Height="20"
+            Width="200"
+            Foreground="#6dbf94"
+            Margin="100,20,150,560">
+        </Slider>
+        <Image Name="Delete"
+               Source="/ClientApp;component/Images/delete.png"
+               Width="30" Height="30"
+               Margin="20,15,400,555"
+               MouseDown="Delete_MouseDown"/>
     </Grid>
 </Window>

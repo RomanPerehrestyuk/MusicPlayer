@@ -32,18 +32,25 @@ namespace ClientApp
         bool isPlaying;
         bool isOnRepeat;
         bool isShuffle;
+        bool isVolumeVisible;
         ObservableCollection<Song> shuffledSongs;
+        ObservableCollection<Song> searchSongs;
         string newFolderPath;
         public MainWindow()
         {
             InitializeComponent();
+            VolumeSlider.Visibility = Visibility.Hidden;
+            Delete.Visibility = Visibility.Visible;
+            mediaElement.Volume = (double)10/100;
             isPlaying = false;
             isOnRepeat = false;
             isShuffle = false;
+            isVolumeVisible = false;
             model = new ViewModel();
             this.DataContext = model;
             Button_Delete.IsEnabled = false;
             shuffledSongs = new ObservableCollection<Song>(model.GetSongs().OrderBy(x => Guid.NewGuid()));
+            searchSongs = new ObservableCollection<Song>();
             newFolderPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Songs");
             if (!Directory.Exists(newFolderPath))
             {
@@ -63,7 +70,6 @@ namespace ClientApp
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
         }
-
         private void MediaElement_MediaEnded(object? sender, EventArgs e)
         {
             int count;
@@ -135,7 +141,6 @@ namespace ClientApp
                 
             }
         }
-
         private void MediaElement_MediaOpened(object? sender, EventArgs e)
         {
             try
@@ -148,7 +153,6 @@ namespace ClientApp
             { 
                 
             }
-            
         }
 
         private void timer_Tick(object sender, EventArgs e)
@@ -202,12 +206,13 @@ namespace ClientApp
         private void Button_Add_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
-            //openFileDialog.Filter = "MP3 files (*.mp3)|*.mp3|All files (*.*)|*.*";
             openFileDialog.Filter = "MP3 files (*.mp3)|*.mp3";
             if (openFileDialog.ShowDialog() == true)
             {
                 try
                 {
+                    ListMusic.ItemsSource = model.Songs;
+                    searchTextBox.Text = "";
                     File.Copy(openFileDialog.FileName, System.IO.Path.Combine(newFolderPath, openFileDialog.SafeFileName));
                     model.AddSongs(new Song(System.IO.Path.GetFileNameWithoutExtension(openFileDialog.FileName)));
                 }
@@ -255,10 +260,10 @@ namespace ClientApp
             var selectedsong = ListMusic.SelectedItem as Song;
                     try
                     {
-                slider.Value = 0;
+                        slider.Value = 0;
                         model.SelectedName = "";
                         mediaElement.Position = TimeSpan.Zero;
-                model.SongDuration = "00:00";
+                        model.SongDuration = "00:00";
                         File.Delete(System.IO.Path.Combine(newFolderPath, model.GetName(selectedsong) + ".mp3"));
                         model.ClearSong(selectedsong);
                     }
@@ -274,6 +279,7 @@ namespace ClientApp
             {
                 if (ListMusic.SelectedItem != null)
                 {
+                    Delete.Visibility = Visibility.Hidden;
                     model.SelectedName = model.GetName(ListMusic.SelectedItem as Song);
                     var imageplay = new System.Windows.Controls.Image { Source = new BitmapImage(new Uri("/Images/play.png", UriKind.Relative)) };
                     var imagepause = new System.Windows.Controls.Image { Source = new BitmapImage(new Uri("/Images/pause.png", UriKind.Relative)) };
@@ -286,6 +292,7 @@ namespace ClientApp
                     }
                     else
                     {
+                        Delete.Visibility = Visibility.Visible;
                         Button_Play.Content = imageplay;
                         isPlaying = false;
                         if (!isShuffle)
@@ -307,7 +314,6 @@ namespace ClientApp
         {
             mediaElement.Position = TimeSpan.FromSeconds(slider.Value);
         }
-
         private void Button_Repeat_Click(object sender, RoutedEventArgs e)
         {
             if (isOnRepeat == false)
@@ -326,6 +332,7 @@ namespace ClientApp
         {
             if (isShuffle == false)
             {
+                searchTextBox.Text = "";
                 Button_Shuffle.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2480b5"));
                 isShuffle = true;
                 Button_Add.IsEnabled = false;
@@ -335,6 +342,7 @@ namespace ClientApp
             }
             else
             {
+                searchTextBox.Text = "";
                 Button_Shuffle.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#34a8eb"));
                 isShuffle = false;
                 Button_Add.IsEnabled = true;
@@ -355,6 +363,10 @@ namespace ClientApp
                 else if (ListMusic.ItemsSource == model.GetSongs())
                 {
                     songsType = model.GetSongs();
+                }
+                else if (ListMusic.ItemsSource == searchSongs)
+                {
+                    songsType= searchSongs;
                 }
                 if (selectedsong != null)
                 {
@@ -415,6 +427,10 @@ namespace ClientApp
             {
                 songsType = model.GetSongs();
             }
+            else if (ListMusic.ItemsSource == searchSongs)
+            {
+                songsType = searchSongs;
+            }
             if (selectedsong != null)
             {
                 if (songsType.Count > 1)
@@ -460,6 +476,61 @@ namespace ClientApp
             }
 
         }
+        private void Search(string searchText)
+        {
+            if (string.IsNullOrWhiteSpace(searchText))
+            {  
+                ListMusic.ItemsSource = model.Songs;
+                model.SongSize = $"Songs Count: {model.GetSongs().Count}";
+            }
+            else
+            {
+                searchSongs = new ObservableCollection<Song>();
+                Song song = new Song(searchText);
+                foreach (var item in model.GetSongs())
+                {
+                    if(item.Name.ToLower().Contains(song.Name))
+                    {
+                        searchSongs.Add(item);
+                    }
+                }
+                ListMusic.ItemsSource = searchSongs;
+                model.SongSize = $"Songs Count: {ListMusic.Items.Count}";
+            }
+        }
+        private void searchTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string searchText = ((TextBox)sender).Text;
+            searchText = searchText.ToLower();
+            Search(searchText);
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            mediaElement.Volume = (double)VolumeSlider.Value / 100;
+        }
+        private void Volume_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if(isVolumeVisible == false)
+            {
+                VolumeSlider.Visibility = Visibility.Visible;
+                isVolumeVisible = true;
+            }
+            else
+            {
+                VolumeSlider.Visibility = Visibility.Hidden;
+                isVolumeVisible = false;
+            }    
+        }
+        private void Delete_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ListMusic.ItemsSource = model.Songs;
+            foreach (var song in model.GetSongs())
+            {
+                File.Delete(System.IO.Path.Combine(newFolderPath, model.GetName(song) + ".mp3"));
+            }
+            model.ClearAll();
+            searchTextBox.Text = "";
+        }
     }
-    
 }

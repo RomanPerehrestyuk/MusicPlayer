@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <None Remove="Images\arrows.png" />
+    <None Remove="Images\delete.png" />
     <None Remove="Images\exit.png" />
     <None Remove="Images\music.png" />
     <None Remove="Images\next.png" />
@@ -18,10 +19,14 @@
     <None Remove="Images\previous.png" />
     <None Remove="Images\repeat.png" />
     <None Remove="Images\rollUp.png" />
+    <None Remove="Images\volume.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Images\arrows.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\delete.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\exit.png">
@@ -49,6 +54,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Images\rollUp.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Images\volume.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

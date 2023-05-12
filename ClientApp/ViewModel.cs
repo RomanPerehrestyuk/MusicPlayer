@@ -31,32 +31,20 @@ namespace ClientApp
         public void ClearAll()
         {
             songs.Clear();
+            SongSize = $"Songs Count: {Songs.Count()}";
         }
-
         public string GetName(Song song)
         {
-               return song.Name;
+            return song.Name;
         }
-
         public ObservableCollection<Song> GetSongs()
         {
             return songs;
         }
-
-        //public void SetCurrentDuration(TimeSpan current_duration, Song song)
-        //{
-        //    song.CurrentDuration = current_duration;
-        //}
-
-        //public void SetFullDuration(TimeSpan full_duration, Song song)
-        //{
-        //    song.FullDuration = full_duration;
-        //}
-
         public void ClearSong(Song song)
         {
-                songs.Remove(song);
-                SongSize = $"Songs Count: {Songs.Count()}";
+            songs.Remove(song);
+            SongSize = $"Songs Count: {Songs.Count()}";
         }
     }
 }
