@@ -8,7 +8,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         Title="MainWindow" Height="600" Width="450"
         AllowsTransparency="True" Background="Transparent"
-        WindowStyle="None" MouseDown="Window_MouseDown" ResizeMode="NoResize" Icon="/Images/music.png">
+        WindowStyle="None" ResizeMode="NoResize" Icon="/Images/music.png">
 
     <Window.Resources>
         <Storyboard x:Key="ZoomAnimation">
@@ -36,7 +36,7 @@
         </TextBlock>
 
         <!--<Image Source="Images/note.png" Width="80" Height="80" Margin="150,60,150,460" x:Name="logo" MouseDown="logo_MouseDown"/>-->
-        <Image Source="Images/note.png" Width="80" Height="80" Margin="150,60,150,460" x:Name="logo" MouseDown="logo_MouseDown" RenderTransformOrigin="0.5,0.5">
+        <Image Source="Images/note.png" Width="80" Height="80" Margin="150,60,150,460" x:Name="logo" RenderTransformOrigin="0.5,0.5">
             <Image.RenderTransform>
                 <ScaleTransform ScaleX="1" ScaleY="1"/>
             </Image.RenderTransform>
